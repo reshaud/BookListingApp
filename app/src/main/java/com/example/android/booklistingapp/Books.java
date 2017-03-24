@@ -1,7 +1,5 @@
 package com.example.android.booklistingapp;
 
-import java.util.List;
-
 /**
  * Created by Reshaud Ally on 3/21/2017.
  */
@@ -9,9 +7,9 @@ import java.util.List;
 public class Books {
     private String mTitle;
     private String mPublishedDate;
-    private List<String> mAuthors;
+    private String mAuthors;
 
-    public Books(String title,String publishedDate, List<String> authors){
+    public Books(String title, String publishedDate, String authors) {
         this.mTitle = title;
         this.mPublishedDate = publishedDate;
         this.mAuthors = authors;
@@ -33,11 +31,11 @@ public class Books {
         this.mPublishedDate = mPublishedDate;
     }
 
-    public List<String> getmAuthors() {
+    public String getmAuthors() {
         return mAuthors;
     }
 
-    public void setmAuthors(List<String> mAuthors) {
+    public void setmAuthors(String mAuthors) {
         this.mAuthors = mAuthors;
     }
 }
