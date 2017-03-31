@@ -21,10 +21,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<List<Books>> {
 
     private static final int LOADER_ID = 0;
+    private static final String STATE_LIST = "booksArrayList";
     private BooksAdapter mAdapter;
     private String searchURL;
     private ProgressBar progressBar;
     private TextView emptyView;
+    private ArrayList<Books> booksArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         if (!(hasNetworkConnectivity(this))) {
             //No network connectivity
             emptyView.setText(R.string.connection_error);
+        } else {
+            emptyView.setText(R.string.initial_empty_list);
         }
 
         //Create new adapter with an empty list of books
@@ -47,6 +51,16 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
 
         //Set adapter on the list view
         booksListView.setAdapter(mAdapter);
+
+        if (savedInstanceState != null) {
+            //If saved state exists restore it
+            booksArrayList = (ArrayList<Books>) savedInstanceState.getSerializable(STATE_LIST);
+
+            //if books array list is not empty add them back to the adapter
+            if (booksArrayList != null) {
+                mAdapter.addAll(booksArrayList);
+            }
+        }
 
         booksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -78,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         // If there is a valid list of Books, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (booksList != null && !booksList.isEmpty()) {
-            mAdapter.addAll(booksList);
+            booksArrayList = (ArrayList<Books>) booksList;
+            mAdapter.addAll(booksArrayList);
         }
 
         emptyView.setText(R.string.empty_list);
@@ -136,5 +151,12 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
 
         return networkInfo != null;
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //Call super method to save state of views
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_LIST, booksArrayList);
     }
 }

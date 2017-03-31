@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Book Listing App</string>
     <string name="search_hint">Search for books</string>
-    <string name="empty_list">No Books Found</string>
-    <string name="connection_error">No Internet Connection</string>
+    <string name="empty_list">No Books Found. Please make sure you have entered text and pressed the search icon above to search for books</string>
+    <string name="connection_error">No Internet Connection. Please check to make sure your WIFI or celluar data is turned on</string>
+    <string name="initial_empty_list">Please enter text above and press the search icon to find books</string>
 </resources>
