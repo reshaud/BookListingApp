@@ -1,20 +1,30 @@
 package com.example.android.booklistingapp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<List<Books>> {
 
+    private static final int LOADER_ID = 0;
     private BooksAdapter mAdapter;
+    private String searchURL;
+    private ProgressBar progressBar;
+    private TextView emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +32,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ListView booksListView = (ListView) findViewById(R.id.book_list);
-        ImageButton searchButton = (ImageButton) findViewById(R.id.search_icon);
-        final EditText searchText = (EditText) findViewById(R.id.search_text);
+        emptyView = (TextView) findViewById(R.id.empty_list);
+
+        //Set view for when list is empty
+        booksListView.setEmptyView(emptyView);
+
+        if (!(hasNetworkConnectivity(this))) {
+            //No network connectivity
+            emptyView.setText(R.string.connection_error);
+        }
 
         //Create new adapter with an empty list of books
         mAdapter = new BooksAdapter(this, new ArrayList<Books>());
@@ -31,18 +48,93 @@ public class MainActivity extends AppCompatActivity {
         //Set adapter on the list view
         booksListView.setAdapter(mAdapter);
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        booksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), searchText.getText(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Books currentBook = mAdapter.getItem(i);
 
-                //Get inputManager
-                InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                // Convert the String URL into a URI object (to pass into the Intent constructor)
+                Uri bookPreview = Uri.parse(currentBook.getmPreview());
 
-                //Hide Keyboard
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                //Intent to view book preview
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, bookPreview);
+                startActivity(websiteIntent);
             }
         });
+    }
+
+    @Override
+    public android.content.Loader<List<Books>> onCreateLoader(int i, Bundle bundle) {
+        return new BooksLoader(this, searchURL);
+    }
+
+    @Override
+    public void onLoadFinished(android.content.Loader<List<Books>> loader, List<Books> booksList) {
+        // Clear the adapter of previous earthquake data
+        mAdapter.clear();
+
+        progressBar.setVisibility(View.GONE);
+
+        // If there is a valid list of Books, then add them to the adapter's
+        // data set. This will trigger the ListView to update.
+        if (booksList != null && !booksList.isEmpty()) {
+            mAdapter.addAll(booksList);
+        }
+
+        emptyView.setText(R.string.empty_list);
+    }
+
+    @Override
+    public void onLoaderReset(android.content.Loader<List<Books>> loader) {
+        // Loader reset, so we can clear out our existing data.
+        mAdapter.clear();
+    }
+
+    public void onSearchIconClicked(View view) {
+        EditText searchText = (EditText) findViewById(R.id.search_text);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        //Get inputManager
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //Hide Keyboard
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+        //If network connectivity exists then search for books
+        if (hasNetworkConnectivity(this)) {
+            //Start progessBar
+            progressBar.setVisibility(View.VISIBLE);
+
+            //Clear text in emptyView since we are initiating a new search
+            emptyView.setText("");
+
+            //Remove all spaces from user inputted text
+            searchURL = String.valueOf(searchText.getText());
+            searchURL = searchURL.replace(" ", "");
+
+            if (getLoaderManager().getLoader(LOADER_ID) == null) {
+                getLoaderManager().initLoader(LOADER_ID, null, this);
+            } else {
+                mAdapter.clear();
+                getLoaderManager().restartLoader(LOADER_ID, null, this);
+            }
+        } else {
+            //No Network connectivity. Clear adapter and let user know
+            mAdapter.clear();
+            emptyView.setText(R.string.connection_error);
+        }
+    }
+
+    //Checks Network Connectivity
+    public boolean hasNetworkConnectivity(Context context) {
+        //Init connectivity manager which is used to check if we have internet access
+        ConnectivityManager check = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        //Get network information
+        NetworkInfo networkInfo = check.getActiveNetworkInfo();
+
+        return networkInfo != null;
 
     }
 }

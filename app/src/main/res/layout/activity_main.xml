@@ -8,7 +8,7 @@
 
     <EditText
         android:id="@+id/search_text"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/fill_space"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_width_small"
         android:layout_marginStart="@dimen/margin_width_small"
@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_width_small"
+        android:onClick="onSearchIconClicked"
         android:src="@drawable/ic_search"
         app:layout_constraintLeft_toRightOf="@+id/search_text"
         app:layout_constraintRight_toRightOf="parent"
@@ -31,8 +32,8 @@
 
     <ListView
         android:id="@+id/book_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/fill_space"
+        android:layout_height="@dimen/fill_space"
         android:layout_marginTop="@dimen/margin_height_mid"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,5 +42,27 @@
         app:layout_constraintTop_toBottomOf="@id/search_text">
 
     </ListView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/book_list"
+        app:layout_constraintLeft_toLeftOf="@+id/book_list"
+        app:layout_constraintRight_toRightOf="@id/book_list"
+        app:layout_constraintTop_toTopOf="@id/book_list" />
+
+    <TextView
+        android:id="@+id/empty_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceLarge"
+        app:layout_constraintBottom_toBottomOf="@id/book_list"
+        app:layout_constraintLeft_toLeftOf="@id/book_list"
+        app:layout_constraintRight_toRightOf="@id/book_list"
+        app:layout_constraintTop_toTopOf="@id/book_list" />
 
 </android.support.constraint.ConstraintLayout>

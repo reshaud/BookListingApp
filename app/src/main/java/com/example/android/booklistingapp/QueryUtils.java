@@ -70,7 +70,7 @@ public final class QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
 
-            String authors = null;
+            String authors = "";
 
             // Create a JSONObject from the JSON response string
             JSONObject baseJsonResponse = new JSONObject(booksJSON);
@@ -90,6 +90,12 @@ public final class QueryUtils {
                 //Get book title associated with the key called "title"
                 String title = volumeInfo.getString("title");
 
+                //Get published date associated with the key called "publishedDate"
+                String publishedDate = volumeInfo.getString("publishedDate");
+
+                //Get preview url associated with the key called "previewLink"
+                String previewLink = volumeInfo.getString("previewLink");
+
                 //Get JSONArray associated with the key called "authors"
                 JSONArray authorsArray = volumeInfo.getJSONArray("authors");
 
@@ -98,14 +104,11 @@ public final class QueryUtils {
                     authors = authors + authorsArray.getString(j) + " ";
                 }
 
-                //Get published date associated with the key called "publishedDate"
-                String publishedDate = volumeInfo.getString("publishedDate");
-
                 // Create a new Book
-                Books books = new Books(title, publishedDate, authors);
+                Books books = new Books(title, publishedDate, authors, previewLink);
 
                 // Add the new book to the booksList
-                //booksList.add(books);
+                booksList.add(books);
             }
 
         } catch (JSONException e) {

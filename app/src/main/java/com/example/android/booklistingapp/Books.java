@@ -8,34 +8,28 @@ public class Books {
     private String mTitle;
     private String mPublishedDate;
     private String mAuthors;
+    private String mPreview;
 
-    public Books(String title, String publishedDate, String authors) {
+    public Books(String title, String publishedDate, String authors, String preview) {
         this.mTitle = title;
         this.mPublishedDate = publishedDate;
         this.mAuthors = authors;
+        this.mPreview = preview;
     }
 
     public String getmTitle() {
         return mTitle;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
-    }
-
     public String getmPublishedDate() {
         return mPublishedDate;
-    }
-
-    public void setmPublishedDate(String mPublishedDate) {
-        this.mPublishedDate = mPublishedDate;
     }
 
     public String getmAuthors() {
         return mAuthors;
     }
 
-    public void setmAuthors(String mAuthors) {
-        this.mAuthors = mAuthors;
+    public String getmPreview() {
+        return mPreview;
     }
 }

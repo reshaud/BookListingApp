@@ -3,4 +3,6 @@
     <dimen name="margin_width_small">8dp</dimen>
     <dimen name="margin_height_small">8dp</dimen>
     <dimen name="margin_height_mid">16dp</dimen>
+    <dimen name="margin_width_mid">16dp</dimen>
+    <dimen name="fill_space">0dp</dimen>
 </resources>
