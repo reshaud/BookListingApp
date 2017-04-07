@@ -97,11 +97,13 @@ public final class QueryUtils {
                 String previewLink = volumeInfo.getString("previewLink");
 
                 //Get JSONArray associated with the key called "authors"
-                JSONArray authorsArray = volumeInfo.getJSONArray("authors");
+                JSONArray authorsArray = volumeInfo.optJSONArray("authors");
 
-                for (int j = 0; j < authorsArray.length(); j++) {
-                    //Add all authors
-                    authors = authors + authorsArray.getString(j) + " ";
+                if (authorsArray != null) {
+                    for (int j = 0; j < authorsArray.length(); j++) {
+                        //Add all authors
+                        authors = authors + authorsArray.getString(j) + " ";
+                    }
                 }
 
                 // Create a new Book
@@ -109,6 +111,9 @@ public final class QueryUtils {
 
                 // Add the new book to the booksList
                 booksList.add(books);
+
+                //Clear Authors
+                authors = "";
             }
 
         } catch (JSONException e) {

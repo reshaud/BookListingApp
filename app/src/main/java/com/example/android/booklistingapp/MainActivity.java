@@ -27,9 +27,10 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
     private ProgressBar progressBar;
     private TextView emptyView;
     private ArrayList<Books> booksArrayList;
+    private boolean restoreData = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -70,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                 // Convert the String URL into a URI object (to pass into the Intent constructor)
                 Uri bookPreview = Uri.parse(currentBook.getmPreview());
 
+                //Activity will move to restoreData state
+                restoreData = true;
+
                 //Intent to view book preview
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, bookPreview);
                 startActivity(websiteIntent);
@@ -94,9 +98,10 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         if (booksList != null && !booksList.isEmpty()) {
             booksArrayList = (ArrayList<Books>) booksList;
             mAdapter.addAll(booksArrayList);
+        } else {
+            emptyView.setText(R.string.empty_list);
+            booksArrayList.clear();
         }
-
-        emptyView.setText(R.string.empty_list);
     }
 
     @Override
@@ -123,9 +128,11 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             //Clear text in emptyView since we are initiating a new search
             emptyView.setText("");
 
-            //Remove all spaces from user inputted text
+            //Remove all spaces from user inputted text and new lines
             searchURL = String.valueOf(searchText.getText());
             searchURL = searchURL.replace(" ", "");
+            searchURL = searchURL.replace("\n", "");
+
 
             if (getLoaderManager().getLoader(LOADER_ID) == null) {
                 getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -133,9 +140,11 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                 mAdapter.clear();
                 getLoaderManager().restartLoader(LOADER_ID, null, this);
             }
+
         } else {
             //No Network connectivity. Clear adapter and let user know
             mAdapter.clear();
+            booksArrayList.clear();
             emptyView.setText(R.string.connection_error);
         }
     }
@@ -150,13 +159,21 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         NetworkInfo networkInfo = check.getActiveNetworkInfo();
 
         return networkInfo != null;
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //Call super method to save state of views
         super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_LIST, booksArrayList);
+
+        if (!restoreData) {
+            outState.putSerializable(STATE_LIST, booksArrayList);
+        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        restoreData = false;
     }
 }
